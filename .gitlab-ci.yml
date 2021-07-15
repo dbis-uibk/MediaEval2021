@@ -1,0 +1,11 @@
+---
+stages:
+  - test
+
+test:
+  image: python:3.8-buster
+  stage: test
+  script:
+    - pip install pipenv
+    - pipenv sync && pipenv sync --dev
+    - pipenv run make test
