@@ -1,12 +1,14 @@
-import pickle
-
+"""Module containing dataloaders for AcousticBrainz features."""
 from dbispipeline.base import TrainValidateTestLoader
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
 class AcousticBrainzLoader(TrainValidateTestLoader):
     """
+    Loader for the provided AcousticBrainz features.
+
     Loads the AcousticBrainz features provided by the task organizers and the
     labels for both the training and test set.
     """
@@ -16,6 +18,7 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
                  test_path,
                  validation_path,
                  num_windows=1):
+        """Creates the object."""
         self.training_path = training_path
         self.test_path = test_path
         self.validation_path = validation_path
@@ -25,30 +28,30 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
         self.mlb_fitted = False
 
         self.columns = [
-            "#ID",
-            "#tags",
-            "lowlevel.average_loudness",
-            "highlevel.danceability.all.danceable",
-            "highlevel.genre_tzanetakis.all.blu",
-            "highlevel.genre_tzanetakis.all.cla",
-            "highlevel.genre_tzanetakis.all.cou",
-            "highlevel.genre_tzanetakis.all.dis",
-            "highlevel.genre_tzanetakis.all.hip",
-            "highlevel.genre_tzanetakis.all.jaz",
-            "highlevel.genre_tzanetakis.all.met",
-            "highlevel.genre_tzanetakis.all.pop",
-            "highlevel.genre_tzanetakis.all.reg",
-            "highlevel.genre_tzanetakis.all.roc",
-            "highlevel.mood_acoustic.all.acoustic",
-            "highlevel.mood_aggressive.all.aggressive",
-            "highlevel.mood_electronic.all.electronic",
-            "highlevel.mood_happy.all.happy",
-            "highlevel.mood_party.all.party",
-            "highlevel.mood_relaxed.all.relaxed",
-            "highlevel.mood_sad.all.sad",
-            "highlevel.timbre.all.bright",
-            "highlevel.timbre.all.dark",
-            "highlevel.tonal_atonal.all.tonal",
+            '#ID',
+            '#tags',
+            'lowlevel.average_loudness',
+            'highlevel.danceability.all.danceable',
+            'highlevel.genre_tzanetakis.all.blu',
+            'highlevel.genre_tzanetakis.all.cla',
+            'highlevel.genre_tzanetakis.all.cou',
+            'highlevel.genre_tzanetakis.all.dis',
+            'highlevel.genre_tzanetakis.all.hip',
+            'highlevel.genre_tzanetakis.all.jaz',
+            'highlevel.genre_tzanetakis.all.met',
+            'highlevel.genre_tzanetakis.all.pop',
+            'highlevel.genre_tzanetakis.all.reg',
+            'highlevel.genre_tzanetakis.all.roc',
+            'highlevel.mood_acoustic.all.acoustic',
+            'highlevel.mood_aggressive.all.aggressive',
+            'highlevel.mood_electronic.all.electronic',
+            'highlevel.mood_happy.all.happy',
+            'highlevel.mood_party.all.party',
+            'highlevel.mood_relaxed.all.relaxed',
+            'highlevel.mood_sad.all.sad',
+            'highlevel.timbre.all.bright',
+            'highlevel.timbre.all.dark',
+            'highlevel.tonal_atonal.all.tonal',
         ]
 
     def load_train(self):
@@ -77,15 +80,15 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
 
     def _load_set(self, set_path):
         # Unpickle data.
-        data = pickle.load(open(set_path, "rb"))
+        data = pd.read_pickle(set_path)
         data = data[self.columns]
 
         # Split features and labels.
-        X = data.drop(columns=['#ID', '#tags']).to_numpy()
+        x = data.drop(columns=['#ID', '#tags']).to_numpy()
         y = data['#tags'].to_numpy()
 
         # Duplicate data num_windows times.
-        X = np.repeat(X, repeats=self.num_windows, axis=0)
+        x = np.repeat(x, repeats=self.num_windows, axis=0)
         y = np.repeat(y, repeats=self.num_windows, axis=0)
 
         # TODO: Remove workaround
@@ -95,4 +98,4 @@ class AcousticBrainzLoader(TrainValidateTestLoader):
         else:
             y = self.mlb.transform(y)
 
-        return X, y
+        return x, y
