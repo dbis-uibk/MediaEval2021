@@ -82,7 +82,12 @@ label_splits = [
 ]
 
 pipeline = Pipeline([
-    ('model', Ensemble(base_estimator=VGGishBaseline(epochs=20))),
+    ('model',
+     Ensemble(
+         base_estimator=VGGishBaseline(epochs=20),
+         label_splits=label_splits,
+         epochs=20,
+     )),
 ])
 
 evaluator = ModelCallbackWrapper(
