@@ -12,6 +12,7 @@ mediaeval2021 = {editable = true, path = "."}
 scikit-learn = "==0.24.2"
 seaborn = "==0.11.1"
 tensorflow = "==2.4.2"
+torch = "==1.9.0"
 
 [dev-packages]
 coverage = "==5.5"
