@@ -1,4 +1,5 @@
 """This module contains the implementation of VGG-ish models."""
+import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
 from skorch import NeuralNetClassifier
@@ -8,18 +9,26 @@ import torch.nn as nn
 class VGGishBaseline(BaseEstimator, ClassifierMixin):
     """The VGGish baseline wrapt as a sklearn classifier."""
 
-    def __init__(self, epochs=10):
+    def __init__(
+        self,
+        epochs=10,
+        classes=None,
+    ):
         """Creates the model."""
         self._model = NeuralNetClassifier(
             CNN(num_class=10),
             max_epochs=epochs,
             lr=0.1,
             iterator_train__shuffle=True,
+            train_split=False,
+            classes=classes,
         )
         self.epochs = epochs
 
     def fit(self, features, target, epochs=None):
         """Fits the model for a given number of epochs."""
+        features = features.reshape(features.shape[:1])
+        target = np.argmax(target, axis=1)
         self._model.fit(features, target)
 
     def validate(self, features, target):
