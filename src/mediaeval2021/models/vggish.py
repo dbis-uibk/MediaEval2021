@@ -15,19 +15,20 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         classes=None,
     ):
         """Creates the model."""
+        self.classes = classes
         self._model = NeuralNetClassifier(
             CNN(num_class=10),
             max_epochs=epochs,
             lr=0.1,
             iterator_train__shuffle=True,
             train_split=False,
-            classes=classes,
+            classes=self.classes,
         )
         self.epochs = epochs
 
     def fit(self, features, target, epochs=None):
         """Fits the model for a given number of epochs."""
-        features = features.reshape(features.shape[:1])
+        features = features.reshape(features.shape[:-1])
         target = np.argmax(target, axis=1)
         self._model.fit(features, target)
 
