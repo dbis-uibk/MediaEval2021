@@ -16,6 +16,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
             lr=0.1,
             iterator_train__shuffle=True,
         )
+        self.epochs = epochs
 
     def fit(self, features, target, epochs=None):
         """Fits the model for a given number of epochs."""
