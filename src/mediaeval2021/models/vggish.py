@@ -29,7 +29,10 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         """Fits the model for a given number of epochs."""
         features = self._reshape_data(features)
         target = np.argmax(target, axis=1)
-        self._model.fit(features, target)
+        if epochs:
+            self._model.fit_loop(features, target, epochs=epochs)
+        else:
+            self._model.fit(features, target)
 
     def validate(self, features, target):
         """Validates the model."""
