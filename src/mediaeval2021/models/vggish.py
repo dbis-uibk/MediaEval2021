@@ -11,18 +11,16 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
 
     def __init__(
         self,
+        num_classes,
         epochs=10,
-        classes=None,
     ):
         """Creates the model."""
-        self.classes = classes
         self._model = NeuralNetClassifier(
-            CNN(num_class=10),
+            CNN(num_class=num_classes),
             max_epochs=epochs,
             lr=0.1,
             iterator_train__shuffle=True,
             train_split=False,
-            classes=self.classes,
         )
         self.epochs = epochs
 

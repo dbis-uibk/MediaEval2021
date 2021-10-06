@@ -86,7 +86,7 @@ pipeline = Pipeline([
      Ensemble(
          base_estimator=VGGishBaseline(
              epochs=20,
-             classes=list(range(len(dataloader.configuration['classes']))),
+             num_classes=len(dataloader.configuration['classes']),
          ),
          label_splits=label_splits,
          epochs=20,
