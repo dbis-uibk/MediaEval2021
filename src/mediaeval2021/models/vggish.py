@@ -44,7 +44,10 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         pred = pred.reshape(len(pred), 1)
 
         return np.apply_along_axis(
-            lambda v: self._label_to_vector(v[0], 1, pred))
+            lambda v: self._label_to_vector(v[0]),
+            1,
+            pred,
+        )
 
     def predict_proba(self, features):
         """Returns the class probabilities predicted by the model."""
