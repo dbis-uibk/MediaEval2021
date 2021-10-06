@@ -15,6 +15,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         epochs=10,
     ):
         """Creates the model."""
+        self.num_classes = num_classes
         self._model = NeuralNetClassifier(
             CNN(num_class=num_classes),
             max_epochs=epochs,
@@ -26,7 +27,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
 
     def fit(self, features, target, epochs=None):
         """Fits the model for a given number of epochs."""
-        features = features.reshape(features.shape[:-1])
+        features = self._reshape_data(features)
         target = np.argmax(target, axis=1)
         self._model.fit(features, target)
 
@@ -35,11 +36,16 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
 
     def predict(self, features):
         """Returns the classes predicted by the model."""
+        features = self._reshape_data(features)
         self._model.predict(features)
 
     def predict_proba(self, features):
         """Returns the class probabilities predicted by the model."""
+        features = self._reshape_data(features)
         self._model.predict_proba(features)
+
+    def _reshape_data(self, data):
+        return data.reshape(data.shape[:-1])
 
 
 class CNN(nn.Module):
