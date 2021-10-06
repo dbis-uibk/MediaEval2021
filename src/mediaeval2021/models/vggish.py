@@ -40,15 +40,22 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
     def predict(self, features):
         """Returns the classes predicted by the model."""
         features = self._reshape_data(features)
-        self._model.predict(features)
+        pred = self._model.predict(features)
+        pred = pred.reshape(len(pred), 1)
+
+        return np.apply_along_axis(
+            lambda v: self._label_to_vector(v[0], 1, pred))
 
     def predict_proba(self, features):
         """Returns the class probabilities predicted by the model."""
         features = self._reshape_data(features)
-        self._model.predict_proba(features)
+        return self._model.predict_proba(features)
 
     def _reshape_data(self, data):
         return data.reshape(data.shape[:-1])
+
+    def _label_to_vector(self, label):
+        return [1 if label == elem else 0 for elem in range(self.num_classes)]
 
 
 class CNN(nn.Module):
