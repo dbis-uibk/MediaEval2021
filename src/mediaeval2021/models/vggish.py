@@ -15,24 +15,30 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
     ):
         """Creates the model."""
         if torch.cuda.device_count() > 0:
-            device = torch.device('cuda')
+            self.device = torch.device('cuda')
         else:
-            device = torch.device('cpu')
+            self.device = torch.device('cpu')
 
+        self.epochs = epochs
+        self._model = None
+
+    def _init_model(self):
         self._model = NeuralNetClassifier(
             CNN(num_class=len(self.label_split)),
-            max_epochs=epochs,
+            max_epochs=self.epochs,
             criterion=torch.nn.BCELoss,
             optimizer=torch.optim.Adam,
             lr=1e-4,
             iterator_train__shuffle=True,
             train_split=False,
-            device=device,
+            device=self.device,
         )
-        self.epochs = epochs
 
     def fit(self, features, target, epochs=None):
         """Fits the model for a given number of epochs."""
+        if not self._model:
+            self._init_model()
+
         features = self._reshape_data(features)
         if epochs:
             self._model.fit_loop(features, target, epochs=epochs)
