@@ -15,6 +15,11 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         epochs=10,
     ):
         """Creates the model."""
+        if torch.cuda.device_count() > 0:
+            device = torch.device('cuda')
+        else:
+            device = torch.device('cpu')
+
         self.num_classes = num_classes
         self._model = NeuralNetClassifier(
             CNN(num_class=num_classes),
@@ -24,6 +29,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
             lr=1e-4,
             iterator_train__shuffle=True,
             train_split=False,
+            device=device,
         )
         self.epochs = epochs
 
