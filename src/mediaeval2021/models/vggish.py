@@ -36,7 +36,6 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
     def fit(self, features, target, epochs=None):
         """Fits the model for a given number of epochs."""
         features = self._reshape_data(features)
-        target = np.argmax(target, axis=1)
         if epochs:
             self._model.fit_loop(features, target, epochs=epochs)
         else:
