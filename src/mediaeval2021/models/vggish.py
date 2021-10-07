@@ -40,6 +40,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
             self._init_model()
 
         features = self._reshape_data(features)
+        target = target.astype(np.float32)
         if epochs:
             self._model.fit_loop(features, target, epochs=epochs)
         else:
@@ -51,14 +52,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
     def predict(self, features):
         """Returns the classes predicted by the model."""
         features = self._reshape_data(features)
-        pred = self._model.predict(features)
-        pred = pred.reshape(len(pred), 1)
-
-        return np.apply_along_axis(
-            lambda v: self._label_to_vector(v[0]),
-            1,
-            pred,
-        )
+        return self._model.predict(features)
 
     def predict_proba(self, features):
         """Returns the class probabilities predicted by the model."""
