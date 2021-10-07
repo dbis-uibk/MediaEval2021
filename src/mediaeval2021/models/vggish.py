@@ -11,7 +11,6 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
 
     def __init__(
         self,
-        num_classes,
         epochs=10,
     ):
         """Creates the model."""
@@ -20,9 +19,8 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         else:
             device = torch.device('cpu')
 
-        self.num_classes = num_classes
         self._model = NeuralNetClassifier(
-            CNN(num_class=num_classes),
+            CNN(num_class=len(self.label_split)),
             max_epochs=epochs,
             criterion=torch.nn.BCELoss,
             optimizer=torch.optim.Adam,
