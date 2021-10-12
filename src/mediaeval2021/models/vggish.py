@@ -2,8 +2,11 @@
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
+from sklearn.metrics import roc_curve
 from skorch import NeuralNetClassifier
 import torch
+
+from ..utils import find_elbow
 
 
 class VGGishBaseline(BaseEstimator, ClassifierMixin):
@@ -21,6 +24,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
 
         self.epochs = epochs
         self._model = None
+        self.threshold = None
 
     def _init_model(self):
         self._model = NeuralNetClassifier(
@@ -46,13 +50,57 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         else:
             self._model.fit(features, target)
 
+        output_shape = target.shape[1]
+        if self.dataloader:
+            try:
+                validation_data = self.dataloader.load_validate()
+            except (NotImplementedError, AttributeError):
+                validation_data = None
+
+            if validation_data and self.label_split is not None:
+                data, labels = validation_data
+                assert len(self.label_split) == output_shape
+                self.validate(data, labels[..., self.label_split])
+            elif validation_data and self.label_split is None:
+                labels = validation_data[1]
+                try:
+                    assert labels.shape[1] == output_shape
+                except IndexError:
+                    assert output_shape == 1
+                self.validate(*validation_data)
+            else:
+                self.threshold = np.full(output_shape, .5)
+        else:
+            self.threshold = np.full(output_shape, .5)
+
     def validate(self, features, target):
         """Validates the model."""
+        features = self._reshape_data(features)
+        y_pred = self.model.predict_proba(features)
+        threshold = []
+        for label_idx in range(y_pred.shape[1]):
+            fpr, tpr, thresholds = roc_curve(target[..., label_idx],
+                                             y_pred[..., label_idx])
+            try:
+                idx = find_elbow(tpr, fpr)
+            except ValueError as ex:
+                print(ex)
+                idx = -1
+
+            if idx >= 0:
+                threshold.append(thresholds[idx])
+            else:
+                threshold.append(0.5)
+
+        self.threshold = np.array(threshold)
 
     def predict(self, features):
         """Returns the classes predicted by the model."""
-        features = self._reshape_data(features)
-        return self._model.predict_proba(features) > 0.5
+        predictions = self.predict_proba(features)
+        if self.threshold:
+            return np.greater(predictions, self.threshold)
+        else:
+            return predictions > 0.5
 
     def predict_proba(self, features):
         """Returns the class probabilities predicted by the model."""
