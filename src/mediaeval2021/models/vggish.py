@@ -81,7 +81,8 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         y_pred = self._model.predict_proba(features)
         y_pred = np.greater_equal(
             y_pred,
-            np.repeat(y_pred.max(axis=1), y_pred.shape[1], axis=1),
+            np.repeat(y_pred.max(axis=1),
+                      y_pred.shape[1]).reshape(y_pred.shape),
         )
         threshold = []
         for label_idx in range(y_pred.shape[1]):
