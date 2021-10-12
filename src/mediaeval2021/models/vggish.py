@@ -104,7 +104,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
     def predict(self, features):
         """Returns the classes predicted by the model."""
         predictions = self.predict_proba(features)
-        if self.threshold:
+        if self.threshold is not None:
             return np.greater(predictions, self.threshold)
         else:
             return predictions > 0.5
