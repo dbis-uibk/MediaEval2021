@@ -15,6 +15,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
     def __init__(
         self,
         epochs=10,
+        dataloader=None,
     ):
         """Creates the model."""
         if torch.cuda.device_count() > 0:
@@ -23,6 +24,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
             self.device = torch.device('cpu')
 
         self.epochs = epochs
+        self.dataloader = dataloader
         self._model = None
         self.threshold = None
 
