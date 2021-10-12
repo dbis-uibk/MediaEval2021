@@ -78,7 +78,8 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
     def validate(self, features, target):
         """Validates the model."""
         features = self._reshape_data(features)
-        y_pred = self._model.predict(features)
+        y_pred = self._model.predict_proba(features)
+        y_pred = y_pred >= y_pred.max(axis=1)
         threshold = []
         for label_idx in range(y_pred.shape[1]):
             fpr, tpr, thresholds = roc_curve(target[..., label_idx],
