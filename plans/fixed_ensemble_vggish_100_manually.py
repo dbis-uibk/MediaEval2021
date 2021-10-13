@@ -1,7 +1,8 @@
 """Ensemble plan manually split by type moode/theme."""
+import json
+
 from dbispipeline.evaluators import FixedSplitEvaluator
 from dbispipeline.evaluators import ModelCallbackWrapper
-import dbispipeline.result_handlers
 from sklearn.pipeline import Pipeline
 
 from mediaeval2021 import common
@@ -96,5 +97,5 @@ evaluator = ModelCallbackWrapper(
 )
 
 result_handlers = [
-    dbispipeline.result_handlers.print_gridsearch_results,
+    lambda results: print(json.dumps(results, indent=4)),
 ]
