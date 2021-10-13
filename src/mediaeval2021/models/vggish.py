@@ -79,11 +79,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         """Validates the model."""
         features = self._reshape_data(features)
         y_pred = self._model.predict_proba(features)
-        y_pred = np.greater_equal(
-            y_pred,
-            np.repeat(y_pred.max(axis=1),
-                      y_pred.shape[1]).reshape(y_pred.shape),
-        )
+
         threshold = []
         for label_idx in range(y_pred.shape[1]):
             fpr, tpr, thresholds = roc_curve(target[..., label_idx],
