@@ -84,7 +84,7 @@ label_splits = [
 pipeline = Pipeline([
     ('model',
      Ensemble(
-         base_estimator=VGGishBaseline(epochs=100, dataloader=dataloader),
+         base_estimator=VGGishBaseline(dataloader=dataloader),
          label_splits=label_splits,
          epochs=100,
      )),

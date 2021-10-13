@@ -10,8 +10,7 @@ from mediaeval2021.dataloaders.melspectrograms import labels_to_indices
 from mediaeval2021.models.ensemble import Ensemble
 from mediaeval2021.models.vggish import VGGishBaseline
 
-dataloader = MelSpectPickleLoader(
-    'data/mediaeval2020/melspect_1366_sampled_1000.pickle')
+dataloader = MelSpectPickleLoader('data/mediaeval2020/melspect_1366.pickle')
 
 label_splits = [
     labels_to_indices(
@@ -87,7 +86,7 @@ pipeline = Pipeline([
      Ensemble(
          base_estimator=VGGishBaseline(dataloader=dataloader),
          label_splits=label_splits,
-         epochs=2,
+         epochs=1000,
      )),
 ])
 
