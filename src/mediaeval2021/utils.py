@@ -1,3 +1,4 @@
+import math
 from random import randrange
 
 import numpy as np
@@ -59,7 +60,7 @@ def load_set_info(path):
     return pd.DataFrame(data, columns=headers)
 
 
-def get_windows(sample, window, window_size, num_windows):
+def get_windows(sample, window, window_size, num_windows, repeating=False):
     windows = []
     for i in range(num_windows):
         if window == 'center':
@@ -73,6 +74,20 @@ def get_windows(sample, window, window_size, num_windows):
             raise ValueError('Unknown window type.')
 
         end_idx = start_idx + window_size
+
+        if repeating:
+            sample = _repeat_sample(sample=sample, min_size=window_size)
+
+        assert sample.shape[1] >= window_size
+
         windows.append(sample[:, start_idx:end_idx])
 
     return windows
+
+
+def _repeat_sample(sample, min_size):
+    if sample.shape[1] < min_size:
+        count = math.ceil(min_size / sample.shape[1])
+        return np.tile(sample, count)
+    else:
+        return sample
