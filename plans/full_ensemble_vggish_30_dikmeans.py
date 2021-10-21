@@ -17,77 +17,31 @@ label_splits = [
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 0
-            'background',
-            'ballad',
-            'children',
-            'christmas',
-            'drama',
-            'emotional',
-            'holiday',
-            'hopeful',
-            'inspiring',
-            'love',
-            'meditative',
-            'melancholic',
-            'nature',
-            'relaxing',
-            'romantic',
-            'sad',
-            'soft'
+            'hopeful', 'heavy', 'holiday', 'nature', 'summer', 'fast', 'emotional', 'corporate', 'space', 'dramatic', 'melodic', 'adventure'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 1
-            'advertising',
-            'commercial',
-            'corporate',
-            'fun',
-            'game',
-            'happy',
-            'melodic',
-            'motivational',
-            'positive',
-            'upbeat',
-            'uplifting'
+            'motivational', 'powerful', 'meditative', 'christmas', 'energetic', 'action', 'romantic', 'happy', 'epic', 'cool', 'advertising'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 2
-            'action',
-            'adventure',
-            'calm',
-            'cool',
-            'dark',
-            'documentary',
-            'dramatic',
-            'dream',
-            'epic',
-            'film',
-            'movie',
-            'slow',
-            'soundscape',
-            'space',
-            'trailer',
-            'travel'
+            'calm', 'party', 'soft', 'sport', 'dark', 'relaxing', 'fun', 'movie', 'background', 'game', 'slow'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 3
-            'deep',
-            'energetic',
-            'fast',
-            'funny',
-            'groovy',
-            'heavy',
-            'party',
-            'powerful',
-            'retro',
-            'sexy',
-            'sport',
-            'summer'
+            'ballad', 'sexy', 'drama', 'children', 'retro', 'sad', 'commercial', 'funny', 'documentary', 'love', 'travel'
+        ],
+    ),
+    labels_to_indices(
+        dataloader=dataloader,
+        label_list=[  # cluster 4
+            'film', 'upbeat', 'deep', 'melancholic', 'positive', 'groovy', 'soundscape', 'inspiring', 'uplifting', 'trailer', 'dream'
         ],
     )
 ]
@@ -97,7 +51,7 @@ pipeline = Pipeline([
      Ensemble(
          base_estimator=VGGishBaseline(dataloader=dataloader),
          label_splits=label_splits,
-         epochs=30,
+         epochs=25,
      )),
 ])
 

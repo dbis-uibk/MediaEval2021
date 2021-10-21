@@ -13,7 +13,7 @@ from mediaeval2021.dataloaders.melspectrograms import labels_to_indices
 from mediaeval2021.models.ensemble import Ensemble
 from mediaeval2021.models.vggish import VGGishBaseline
 
-dataloader = MelSpectPickleLoader('data/mediaeval2020/melspect_TODO.pickle')
+dataloader = MelSpectPickleLoader('data/mediaeval2020/melspect_1366.pickle')
 
 label_splits = [
     np.arange(0, 19, 1),
