@@ -16,6 +16,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         self,
         epochs=10,
         dataloader=None,
+        batch_size=64,
     ):
         """Creates the model."""
         if torch.cuda.device_count() > 0:
@@ -27,6 +28,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         self.dataloader = dataloader
         self._model = None
         self.threshold = None
+        self.batch_size = batch_size
 
     def _init_model(self):
         self._model = NeuralNetClassifier(
@@ -38,6 +40,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
             iterator_train__shuffle=True,
             train_split=False,
             device=self.device,
+            batch_size=self.batch_size
         )
 
     def fit(self, features, target, epochs=None):
