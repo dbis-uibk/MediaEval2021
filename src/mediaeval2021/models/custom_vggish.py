@@ -1,18 +1,17 @@
-"""This module contains the implementation of VGG-ish models."""
 import numpy as np
 import torch
 
 
-class CNN(torch.nn.Module):
-    """The VGGish baseline model used since the MediaEval 2019.
+class CustomCNN(torch.nn.Module):
+    """Custom VGGish baseline model used since the MediaEval 2019.
 
-    The implementation is taken from the provided github repository.
+    The original implementation is taken from the provided github repository.
     https://github.com/MTG/mtg-jamendo-dataset/blob/master/scripts/baseline/model.py
     """
 
     def __init__(self, num_classes=56):
         """Creates the pytorch model."""
-        super(CNN, self).__init__()
+        super(CustomCNN, self).__init__()
 
         # init bn
         self.bn_init = torch.nn.BatchNorm2d(1)
@@ -33,17 +32,21 @@ class CNN(torch.nn.Module):
         self.mp_3 = torch.nn.MaxPool2d((2, 4))
 
         # layer 4
-        self.conv_4 = torch.nn.Conv2d(128, 128, 3, padding=1)
-        self.bn_4 = torch.nn.BatchNorm2d(128)
+        self.conv_4 = torch.nn.Conv2d(128, 256, 3, padding=1)
+        self.bn_4 = torch.nn.BatchNorm2d(256)
         self.mp_4 = torch.nn.MaxPool2d((3, 5))
 
         # layer 5
-        self.conv_5 = torch.nn.Conv2d(128, 64, 3, padding=1)
-        self.bn_5 = torch.nn.BatchNorm2d(64)
+        self.conv_5 = torch.nn.Conv2d(256, 512, 3, padding=1)
+        self.bn_5 = torch.nn.BatchNorm2d(512)
         self.mp_5 = torch.nn.MaxPool2d((4, 4))
 
+        # layer 6
+        self.conv_6 = torch.nn.Conv2d(512, 512, 3, padding=1)
+        self.bn_6 = torch.nn.BatchNorm2d(512)
+
         # classifier
-        self.dense = torch.nn.Linear(64, num_classes)
+        self.dense = torch.nn.Linear(512, num_classes)
         self.dropout = torch.nn.Dropout(0.5)
 
     def forward(self, x):
@@ -67,6 +70,9 @@ class CNN(torch.nn.Module):
 
         # layer 5
         x = self.mp_5(torch.nn.ELU()(self.bn_5(self.conv_5(x))))
+
+        # layer 6
+        x = torch.nn.ELU()(self.bn_6(self.conv_6(x)))
 
         # classifier
         x = x.view(x.size(0), -1)

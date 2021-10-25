@@ -9,7 +9,7 @@ from mediaeval2021 import common
 from mediaeval2021.dataloaders.melspectrograms import MelSpectPickleLoader
 from mediaeval2021.dataloaders.melspectrograms import labels_to_indices
 from mediaeval2021.models.ensemble import Ensemble
-from mediaeval2021.models.vggish import VGGishBaseline
+from mediaeval2021.models.wrapper import TorchWrapper
 
 dataloader = MelSpectPickleLoader('data/mediaeval2020/melspect_1366.pickle')
 
@@ -49,9 +49,9 @@ label_splits = [
 pipeline = Pipeline([
     ('model',
      Ensemble(
-         base_estimator=VGGishBaseline(dataloader=dataloader),
+         base_estimator=TorchWrapper(model_name="CNN", dataloader=dataloader, batch_size=64),
          label_splits=label_splits,
-         epochs=25,
+         epochs=100,
      )),
 ])
 

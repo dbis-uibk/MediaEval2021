@@ -1,0 +1,5 @@
+Usage: python -m dbispipeline [OPTIONS] PLAN
+Try 'python -m dbispipeline --help' for help.
+
+Error: Invalid value for 'PLAN': Path 'plans/fixed_vcustom_vggish_all.py' does not exist.
+srun: error: gc17: task 0: Exited with exit code 2

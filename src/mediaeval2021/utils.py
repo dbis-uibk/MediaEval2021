@@ -97,7 +97,7 @@ def _repeat_sample(sample, min_size):
 
 class EarlyStopper(object):
 
-    def __init__(self, num_trials, save_path='./saved_models', accuracy=0):
+    def __init__(self, num_trials, save_path='./tmp.pt', accuracy=0):
         self.num_trials = num_trials
         self.trial_counter = 0
         self.best_accuracy = accuracy

@@ -9,7 +9,7 @@ from mediaeval2021 import common
 from mediaeval2021.dataloaders.melspectrograms import MelSpectPickleLoader
 from mediaeval2021.dataloaders.melspectrograms import labels_to_indices
 from mediaeval2021.models.ensemble import Ensemble
-from mediaeval2021.models.vggish import VGGishBaseline
+from mediaeval2021.models.wrapper import TorchWrapper
 
 dataloader = MelSpectPickleLoader('data/mediaeval2020/melspect_1366.pickle')
 
@@ -17,55 +17,61 @@ label_splits = [
     labels_to_indices(
         dataloader=dataloader,
         label_list=[
-            'children', 'heavy', 'nature', 'corporate', 'cool', 'adventure'
+            'deep', 'holiday', 'sexy', 'sad', 'inspiring', 'game'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  
-            'meditative', 'party', 'positive', 'emotional', 'trailer', 'motivational'
+            'documentary', 'heavy', 'ballad', 'romantic', 'funny', 'adventure'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[ 
-            'drama', 'sexy', 'energetic', 'romantic', 'calm', 'melodic'
+            'positive', 'meditative', 'summer', 'fast', 'calm', 'travel'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  
-            'sad', 'powerful', 'hopeful', 'film', 'uplifting', 'travel'
+            'trailer', 'soft', 'energetic', 'soundscape', 'background', 'melodic'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  
-           'groovy', 'holiday', 'dark', 'fun', 'background', 'dream'
+           'commercial', 'drama', 'retro', 'fun', 'epic', 'dream'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[ 
-          'funny', 'soft', 'retro', 'action', 'happy', 'advertising'
+          'emotional', 'party', 'nature', 'film', 'uplifting', 'advertising'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  
-           'soundscape', 'upbeat', 'melancholic', 'movie', 'game'
+           'hopeful', 'powerful', 'relaxing', 'corporate', 'space'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  
-           'space', 'christmas', 'summer', 'epic', 'love'
+           'motivational', 'dark', 'children', 'groovy', 'dramatic'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  
-           'documentary', 'sport', 'relaxing', 'commercial', 'dramatic'
+           'action', 'christmas', 'upbeat', 'movie', 'love'
+        ],
+    ),
+    labels_to_indices(
+        dataloader=dataloader,
+        label_list=[  
+           'slow', 'sport', 'melancholic', 'happy', 'cool'
         ],
     )
 ]
@@ -73,7 +79,7 @@ label_splits = [
 pipeline = Pipeline([
     ('model',
      Ensemble(
-         base_estimator=VGGishBaseline(dataloader=dataloader),
+         base_estimator=TorchWrapper(model_name="ResNet-18", dataloader=dataloader, batch_size=64),
          label_splits=label_splits,
          epochs=100,
      )),

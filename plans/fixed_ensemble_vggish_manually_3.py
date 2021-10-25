@@ -9,96 +9,91 @@ from mediaeval2021 import common
 from mediaeval2021.dataloaders.melspectrograms import MelSpectPickleLoader
 from mediaeval2021.dataloaders.melspectrograms import labels_to_indices
 from mediaeval2021.models.ensemble import Ensemble
-from mediaeval2021.models.vggish import VGGishBaseline
-from mediaeval2021.models.resnet import ResNetModel
+from mediaeval2021.models.wrapper import TorchWrapper
 
 dataloader = MelSpectPickleLoader('data/mediaeval2020/melspect_1366.pickle')
 
 label_splits = [
     labels_to_indices(
         dataloader=dataloader,
-        label_list=[  # cluster 0
+        label_list=[  # unsure
+            'action',
+            'adventure',
             'background',
+            'drama',
+            'dream',
+            'love',
+            'melodic',
+            'motivational',
+            'nature',
+            'party',
+            'retro',
+            'soundscape',
+            'space',
+            'sport',
+            'summer',
+            'upbeat',
+        ],
+    ),
+    labels_to_indices(
+        dataloader=dataloader,
+        label_list=[  # theme
+            'advertising',
             'ballad',
             'children',
             'christmas',
-            'drama',
-            'emotional',
-            'holiday',
-            'hopeful',
-            'inspiring',
-            'love',
-            'meditative',
-            'melancholic',
-            'nature',
-            'relaxing',
-            'romantic',
-            'sad',
-            'soft'
-        ],
-    ),
-    labels_to_indices(
-        dataloader=dataloader,
-        label_list=[  # cluster 1
-            'advertising',
             'commercial',
             'corporate',
-            'fun',
+            'documentary',
+            'film',
             'game',
-            'happy',
-            'melodic',
-            'motivational',
-            'positive',
-            'upbeat',
-            'uplifting'
+            'holiday',
+            'movie',
+            'trailer',
+            'travel',
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
-        label_list=[  # cluster 2
-            'action',
-            'adventure',
+        label_list=[  # mood
             'calm',
             'cool',
             'dark',
-            'documentary',
-            'dramatic',
-            'dream',
-            'epic',
-            'film',
-            'movie',
-            'slow',
-            'soundscape',
-            'space',
-            'trailer',
-            'travel'
-        ],
-    ),
-    labels_to_indices(
-        dataloader=dataloader,
-        label_list=[  # cluster 3
             'deep',
+            'dramatic',
+            'emotional',
             'energetic',
+            'epic',
             'fast',
+            'fun',
             'funny',
             'groovy',
+            'happy',
             'heavy',
-            'party',
+            'hopeful',
+            'inspiring',
+            'meditative',
+            'melancholic',
+            'positive',
             'powerful',
-            'retro',
+            'relaxing',
+            'romantic',
+            'sad',
             'sexy',
-            'sport',
-            'summer'
+            'slow',
+            'soft',
+            'uplifting',
         ],
-    )
+    ),
 ]
+
 
 pipeline = Pipeline([
     ('model',
      Ensemble(
-         base_estimator=ResNetModel(dataloader=dataloader),
+         base_estimator=TorchWrapper(model_name="CNN", dataloader=dataloader, batch_size=64),
          label_splits=label_splits,
-         epochs=4,
+         epochs=100,
      )),
 ])
 

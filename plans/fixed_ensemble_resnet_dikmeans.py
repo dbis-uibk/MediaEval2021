@@ -9,7 +9,7 @@ from mediaeval2021 import common
 from mediaeval2021.dataloaders.melspectrograms import MelSpectPickleLoader
 from mediaeval2021.dataloaders.melspectrograms import labels_to_indices
 from mediaeval2021.models.ensemble import Ensemble
-from mediaeval2021.models.vggish import VGGishBaseline
+from mediaeval2021.models.wrapper import TorchWrapper
 
 dataloader = MelSpectPickleLoader('data/mediaeval2020/melspect_1366.pickle')
 
@@ -17,25 +17,25 @@ label_splits = [
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 0
-            'powerful', 'holiday', 'deep', 'nature', 'fast', 'groovy', 'romantic', 'soundscape', 'happy', 'game', 'slow', 'dream'
+            'hopeful', 'heavy', 'holiday', 'nature', 'summer', 'fast', 'emotional', 'corporate', 'space', 'dramatic', 'melodic', 'adventure'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 1
-            'calm', 'heavy', 'ballad', 'children', 'summer', 'sad', 'commercial', 'movie', 'epic', 'love', 'advertising'
+            'motivational', 'powerful', 'meditative', 'christmas', 'energetic', 'action', 'romantic', 'happy', 'epic', 'cool', 'advertising'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 2
-            'upbeat', 'meditative', 'sexy', 'energetic', 'melancholic', 'emotional', 'funny', 'corporate', 'documentary', 'dramatic', 'melodic'
+            'calm', 'party', 'soft', 'sport', 'dark', 'relaxing', 'fun', 'movie', 'background', 'game', 'slow'
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 3
-            'soft', 'party', 'drama', 'positive', 'retro', 'film', 'hopeful', 'uplifting', 'trailer', 'background', 'travel'
+            'ballad', 'sexy', 'drama', 'children', 'retro', 'sad', 'commercial', 'funny', 'documentary', 'love', 'travel'
         ],
     ),
     labels_to_indices(
@@ -49,9 +49,9 @@ label_splits = [
 pipeline = Pipeline([
     ('model',
      Ensemble(
-         base_estimator=VGGishBaseline(dataloader=dataloader),
+         base_estimator=TorchWrapper(model_name="ResNet-18", dataloader=dataloader, batch_size=64),
          label_splits=label_splits,
-         epochs=25,
+         epochs=100,
      )),
 ])
 

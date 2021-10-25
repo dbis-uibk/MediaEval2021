@@ -1,0 +1,22 @@
+/home/andreas.peintner/.local/share/virtualenvs/mediaeval2021-L4uY4Np9/lib/python3.8/site-packages/torch/nn/functional.py:718: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at  /pytorch/c10/core/TensorImpl.h:1156.)
+  return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
+2021-10-25 15:52:12,690 ERROR:dbispipeline     Error during evaluation: [Errno 2] No such file or directory: ''
+Traceback (most recent call last):
+  File "/home/andreas.peintner/.local/share/virtualenvs/mediaeval2021-L4uY4Np9/lib/python3.8/site-packages/dbispipeline/core.py", line 92, in run
+    result = self.evaluator.evaluate(self.pipeline, run_data)
+  File "/home/andreas.peintner/.local/share/virtualenvs/mediaeval2021-L4uY4Np9/lib/python3.8/site-packages/dbispipeline/evaluators.py", line 74, in evaluate
+    result = self.wrapped_evaluator.evaluate(model, data)
+  File "/home/andreas.peintner/.local/share/virtualenvs/mediaeval2021-L4uY4Np9/lib/python3.8/site-packages/dbispipeline/evaluators.py", line 303, in evaluate
+    model.fit(xtrain, ytrain)
+  File "/home/andreas.peintner/.local/share/virtualenvs/mediaeval2021-L4uY4Np9/lib/python3.8/site-packages/sklearn/pipeline.py", line 346, in fit
+    self._final_estimator.fit(Xt, y, **fit_params_last_step)
+  File "/home/andreas.peintner/projects/mediaeval2021/src/mediaeval2021/models/ensemble.py", line 33, in fit
+    model.fit(data, labels[..., split])
+  File "/home/andreas.peintner/projects/mediaeval2021/src/mediaeval2021/models/wrapper.py", line 103, in fit
+    if not self.early_stopper.is_continuable(self._model, valid_auc, epoch, self.optimizer, loss):
+  File "/home/andreas.peintner/projects/mediaeval2021/src/mediaeval2021/utils.py", line 111, in is_continuable
+    os.makedirs(os.path.dirname(self.save_path))
+  File "/home/andreas.peintner/miniconda3/lib/python3.8/os.py", line 223, in makedirs
+    mkdir(name, mode)
+FileNotFoundError: [Errno 2] No such file or directory: ''
+Epoch [1/100] train loss: 0.410676 valid roc-auc: 0.514027
