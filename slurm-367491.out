@@ -1,8 +1,0 @@
-/home/andreas.peintner/.local/share/virtualenvs/mediaeval2021-L4uY4Np9/lib/python3.8/site-packages/torch/nn/functional.py:718: UserWarning: Named tensors and all their associated APIs are an experimental feature and subject to change. Please do not use them for anything important until they are released as stable. (Triggered internally at  /pytorch/c10/core/TensorImpl.h:1156.)
-  return torch.max_pool2d(input, kernel_size, stride, padding, dilation, ceil_mode)
-Epoch [1/100] train loss: 0.414982 valid roc-auc: 0.518617
-srun: got SIGCONT
-slurmstepd: error: *** JOB 367491 ON gc17 CANCELLED AT 2021-10-25T15:50:40 ***
-srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
-slurmstepd: error: *** STEP 367491.0 ON gc17 CANCELLED AT 2021-10-25T15:50:40 ***
-srun: forcing job termination
