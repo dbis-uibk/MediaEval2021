@@ -2,11 +2,10 @@
 import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
-from sklearn.metrics import roc_curve
-from skorch import NeuralNetClassifier
+from sklearn.metrics import roc_curve, roc_auc_score
 import torch
 
-from ..utils import find_elbow
+from ..utils import find_elbow, EarlyStopper
 
 
 class VGGishBaseline(BaseEstimator, ClassifierMixin):
@@ -14,7 +13,7 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
 
     def __init__(
         self,
-        epochs=10,
+        epochs=100,
         dataloader=None,
         batch_size=64,
     ):
@@ -31,29 +30,71 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
         self.batch_size = batch_size
 
     def _init_model(self):
-        self._model = NeuralNetClassifier(
-            CNN(num_class=len(self.label_split)),
-            max_epochs=self.epochs,
-            criterion=torch.nn.BCELoss,
-            optimizer=torch.optim.Adam,
-            lr=1e-4,
-            iterator_train__shuffle=True,
-            train_split=False,
-            device=self.device,
-            batch_size=self.batch_size
-        )
+        model = CNN(num_class=len(self.label_split))
+
+        self._model = model.to(device=self.device)
+        self.criterion = torch.nn.BCELoss()
+        self.optimizer = torch.optim.Adam(self._model.parameters(), lr=1e-4)
+
+        self.early_stopper = EarlyStopper(num_trials=10)
 
     def fit(self, features, target, epochs=None):
         """Fits the model for a given number of epochs."""
         if not self._model:
             self._init_model()
 
-        features = self._reshape_data(features)
-        target = target.astype(np.float32)
-        if epochs:
-            self._model.fit_loop(features, target, epochs=epochs)
-        else:
-            self._model.fit(features, target)
+        t_features = torch.Tensor(self._reshape_data(features))
+        t_target = torch.Tensor(target.astype(np.float32))
+
+        train_dataset = torch.utils.data.TensorDataset(t_features, t_target)
+        train_loader = torch.utils.data.DataLoader(
+            train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=1)
+
+        if self.dataloader:
+            validation_data = self.dataloader.load_validate()
+            valid_features, valid_targets = validation_data
+
+        if not epochs:
+            epochs = self.epochs
+
+        for epoch in range(epochs):
+
+            total_loss = 0
+            self._model.train()
+
+            for x, y in train_loader:
+
+                # variables to cuda
+                x = x.to(self.device)
+                y = y.to(self.device)
+
+                # predict
+                out = self._model(x)
+                loss = self.criterion(out, y)
+
+                # back propagation
+                self._model.zero_grad()
+                loss.backward()
+                self.optimizer.step()
+
+                total_loss += loss.item()
+
+            print(f'Epoch [{epoch+1}/{epochs}] train loss: {total_loss / len(train_loader):.6f}')
+            train_preds = self.predict_proba(features)
+            train_auc = roc_auc_score(target, train_preds)
+            print(f'\ttrain roc-auc: {train_auc:.6f}')
+
+            # validation
+            valid_preds = self.predict_proba(valid_features)
+            valid_auc = roc_auc_score(valid_targets, valid_preds)
+            print(f'\tvalid roc-auc: {valid_auc:.6f}')
+            if not self.early_stopper.is_continuable(self._model, valid_auc, epoch, self.optimizer, loss):
+                print(f'\tvalidation: best auc: {self.early_stopper.best_accuracy}')
+                break
+        
+        # load best model
+        checkpoint = torch.load(self.early_stopper.save_path)
+        self._model.load_state_dict(checkpoint['model_state_dict'])
 
         output_shape = target.shape[1]
         if self.dataloader:
@@ -110,8 +151,17 @@ class VGGishBaseline(BaseEstimator, ClassifierMixin):
 
     def predict_proba(self, features):
         """Returns the class probabilities predicted by the model."""
-        features = self._reshape_data(features)
-        return self._model.predict_proba(features)
+        features = torch.Tensor(self._reshape_data(features))
+        dataloader = torch.utils.data.DataLoader(features, batch_size=self.batch_size, shuffle=False, num_workers=1)
+        self._model.eval()
+
+        full_data = []
+        with torch.no_grad():
+            for x in dataloader:
+                x = x.to(self.device)
+                full_data.append(self._model(x).detach().cpu().numpy())
+
+        return np.concatenate(full_data, axis=0)
 
     def _reshape_data(self, data):
         return data.reshape(data.shape[:-1])

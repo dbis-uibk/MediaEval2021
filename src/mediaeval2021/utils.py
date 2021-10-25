@@ -1,6 +1,8 @@
 import math
 from random import randrange
+import os
 
+import torch
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import normalize
@@ -91,3 +93,32 @@ def _repeat_sample(sample, min_size):
         return np.tile(sample, count)
     else:
         return sample
+
+
+class EarlyStopper(object):
+
+    def __init__(self, num_trials, save_path='./saved_models', accuracy=0):
+        self.num_trials = num_trials
+        self.trial_counter = 0
+        self.best_accuracy = accuracy
+        self.save_path = save_path
+
+    def is_continuable(self, model, accuracy, epoch, optimizer, loss):
+        if accuracy > self.best_accuracy:
+            self.best_accuracy = accuracy
+            self.trial_counter = 0
+            if not os.path.exists(os.path.dirname(self.save_path)):
+                os.makedirs(os.path.dirname(self.save_path))
+            torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'loss': loss,
+                'accuracy': accuracy
+            }, self.save_path)
+            return True
+        elif self.trial_counter + 1 < self.num_trials:
+            self.trial_counter += 1
+            return True
+        else:
+            return False
