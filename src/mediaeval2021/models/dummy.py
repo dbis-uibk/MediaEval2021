@@ -8,21 +8,21 @@ class DummyClassifier(BaseEstimator, ClassifierMixin):
     """DummyClassifier."""
 
     def __init__(self, num_classes):
-        """creates the object."""
+        """Creates the object."""
         self.num_classes = num_classes
 
     def fit(self, features, target, epochs=None):
-        """Ignoses the input"""
+        """Ignoses the input."""
         pass
 
     def validate(self, features, target):
-        """Ignoses the input"""
+        """Ignoses the input."""
         pass
 
     def predict(self, features):
         """Always predicts false."""
-        return self.predict(features) > 1
+        return self.predict_proba(features) > 0.5
 
     def predict_proba(self, features):
-        """Always predicts 0"""
+        """Always predicts 0."""
         return np.zeros((features.shape[0], self.num_classes))
