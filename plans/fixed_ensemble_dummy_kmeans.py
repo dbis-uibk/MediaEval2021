@@ -8,9 +8,7 @@ from sklearn.pipeline import Pipeline
 from mediaeval2021 import common
 from mediaeval2021.dataloaders.melspectrograms import MelSpectPickleLoader
 from mediaeval2021.dataloaders.melspectrograms import labels_to_indices
-from mediaeval2021.models.ensemble import Ensemble
-from mediaeval2021.models.wrapper import TorchWrapper
-from sklearn.dummy import DummyClassifier
+from mediaeval2021.models.dummy import DummyClassifier
 
 dataloader = MelSpectPickleLoader('data/mediaeval2020/melspect_1366.pickle')
 
@@ -49,7 +47,7 @@ label_splits = [
 ]
 
 pipeline = Pipeline([
-    ('model', DummyClassifier(constant=56 * [0])),
+    ('model', DummyClassifier(num_classes=56)),
 ])
 
 evaluator = ModelCallbackWrapper(
