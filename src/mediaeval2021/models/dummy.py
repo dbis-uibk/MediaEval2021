@@ -20,9 +20,9 @@ class DummyClassifier(BaseEstimator, ClassifierMixin):
         pass
 
     def predict(self, features):
-        """Always predicts 0"""
-        return np.zeros((features.shape[0], self.num_classes))
+        """Always predicts false."""
+        return self.predict(features) > 1
 
     def predict_proba(self, features):
-        """Always predicts false."""
-        return self.predict(features) < 1
+        """Always predicts 0"""
+        return np.zeros((features.shape[0], self.num_classes))
