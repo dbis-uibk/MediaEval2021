@@ -98,8 +98,8 @@ class TorchWrapper(BaseEstimator, ClassifierMixin):
 
             # validation
             valid_preds = self.predict_proba(valid_features)
-            valid_auc = roc_auc_score(valid_targets, valid_preds)
-            valid_loss = self.criterion(torch.Tensor(valid_preds), torch.Tensor(valid_targets))
+            valid_auc = roc_auc_score(valid_targets[..., self.label_split], valid_preds)
+            valid_loss = self.criterion(torch.Tensor(valid_preds), torch.Tensor(valid_targets[..., self.label_split]))
 
             # LR scheduling
             self.scheduler.step(valid_loss)
