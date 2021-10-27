@@ -79,7 +79,7 @@ label_splits = [
 pipeline = Pipeline([
     ('model',
      Ensemble(
-         base_estimator=TorchWrapper(model_name="ResNet-18", dataloader=dataloader, batch_size=64),
+         base_estimator=TorchWrapper(model_name="ResNet-18", dataloader=dataloader, batch_size=64, early_stopping=True),
          label_splits=label_splits,
          epochs=100,
      )),

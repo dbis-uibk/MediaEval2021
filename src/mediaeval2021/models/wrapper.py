@@ -19,7 +19,8 @@ class TorchWrapper(BaseEstimator, ClassifierMixin):
         model_name,
         epochs=100,
         dataloader=None,
-        batch_size=64
+        batch_size=64,
+        early_stopping=False
     ):
 
         if torch.cuda.device_count() > 0:
@@ -34,6 +35,7 @@ class TorchWrapper(BaseEstimator, ClassifierMixin):
         self.dataloader = dataloader
         self.threshold = None
         self.batch_size = batch_size
+        self.early_stopping = early_stopping
 
     def _init_model(self):
         if self.model_name == 'ResNet-18':
@@ -50,8 +52,8 @@ class TorchWrapper(BaseEstimator, ClassifierMixin):
         self._model = model.to(device=self.device)
         self.criterion = torch.nn.BCELoss()
         self.optimizer = torch.optim.Adam(self._model.parameters(), lr=1e-4)
-
-        self.early_stopper = EarlyStopper(num_trials=20)
+        self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, 'min', patience=10, factor=0.1)
+        self.early_stopper = EarlyStopper(num_trials=30)
 
     def fit(self, features, target, epochs=None):
         """Fits the model for a given number of epochs."""
@@ -97,16 +99,21 @@ class TorchWrapper(BaseEstimator, ClassifierMixin):
             # validation
             valid_preds = self.predict_proba(valid_features)
             valid_auc = roc_auc_score(valid_targets, valid_preds)
+            valid_loss = self.criterion(torch.Tensor(valid_preds), torch.Tensor(valid_targets))
+
+            # LR scheduling
+            self.scheduler.step(valid_loss)
 
             print(f'Epoch [{epoch+1}/{epochs}] train loss: {total_loss / len(train_loader):.6f} valid roc-auc: {valid_auc:.6f}')
 
-            if not self.early_stopper.is_continuable(self._model, valid_auc, epoch, self.optimizer, loss):
+            if self.early_stopping and not self.early_stopper.is_continuable(self._model, valid_auc, epoch, self.optimizer, loss):
                 print(f'\tvalidation: best auc: {self.early_stopper.best_accuracy}')
                 break
         
         # load best model
-        checkpoint = torch.load(self.early_stopper.save_path)
-        self._model.load_state_dict(checkpoint['model_state_dict'])
+        if self.early_stopping:
+            checkpoint = torch.load(self.early_stopper.save_path)
+            self._model.load_state_dict(checkpoint['model_state_dict'])
 
         output_shape = target.shape[1]
         if self.dataloader:
