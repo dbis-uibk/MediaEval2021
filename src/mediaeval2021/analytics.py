@@ -80,7 +80,7 @@ def plot_confusion_matrix(database_entry,
                           normalize_axis=None,
                           multilabel=None):
     confusion_matrix = np.array(database_entry.outcome['confusion_matrix'])
-    if multilabel:
+    if multilabel is not None:
         try:
             idx = int(multilabel)
         except ValueError:

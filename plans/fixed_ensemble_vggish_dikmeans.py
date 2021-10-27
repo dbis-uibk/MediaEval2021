@@ -17,31 +17,82 @@ label_splits = [
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 0
-            'hopeful', 'heavy', 'holiday', 'nature', 'summer', 'fast', 'emotional', 'corporate', 'space', 'dramatic', 'melodic', 'adventure'
+            'hopeful',
+            'heavy',
+            'holiday',
+            'nature',
+            'summer',
+            'fast',
+            'emotional',
+            'corporate',
+            'space',
+            'dramatic',
+            'melodic',
+            'adventure',
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 1
-            'motivational', 'powerful', 'meditative', 'christmas', 'energetic', 'action', 'romantic', 'happy', 'epic', 'cool', 'advertising'
+            'motivational',
+            'powerful',
+            'meditative',
+            'christmas',
+            'energetic',
+            'action',
+            'romantic',
+            'happy',
+            'epic',
+            'cool',
+            'advertising',
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 2
-            'calm', 'party', 'soft', 'sport', 'dark', 'relaxing', 'fun', 'movie', 'background', 'game', 'slow'
+            'calm',
+            'party',
+            'soft',
+            'sport',
+            'dark',
+            'relaxing',
+            'fun',
+            'movie',
+            'background',
+            'game',
+            'slow',
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 3
-            'ballad', 'sexy', 'drama', 'children', 'retro', 'sad', 'commercial', 'funny', 'documentary', 'love', 'travel'
+            'ballad',
+            'sexy',
+            'drama',
+            'children',
+            'retro',
+            'sad',
+            'commercial',
+            'funny',
+            'documentary',
+            'love',
+            'travel',
         ],
     ),
     labels_to_indices(
         dataloader=dataloader,
         label_list=[  # cluster 4
-            'film', 'upbeat', 'deep', 'melancholic', 'positive', 'groovy', 'soundscape', 'inspiring', 'uplifting', 'trailer', 'dream'
+            'film',
+            'upbeat',
+            'deep',
+            'melancholic',
+            'positive',
+            'groovy',
+            'soundscape',
+            'inspiring',
+            'uplifting',
+            'trailer',
+            'dream',
         ],
     )
 ]
@@ -49,7 +100,9 @@ label_splits = [
 pipeline = Pipeline([
     ('model',
      Ensemble(
-         base_estimator=TorchWrapper(model_name="CNN", dataloader=dataloader, batch_size=64),
+         base_estimator=TorchWrapper(model_name='CNN',
+                                     dataloader=dataloader,
+                                     batch_size=64),
          label_splits=label_splits,
          epochs=100,
      )),
